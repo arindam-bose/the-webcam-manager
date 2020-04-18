@@ -226,13 +226,15 @@ def read_template(filename):
 
 def send_email(filename):
     """
-    1. Creats a smtp email server with gmail using ssl and 2-factor authentication service present
-    2. Reads the recipients names andd address
-    3. Prepare the content of the email 
-    4. Sends email to the recipients to scare them
-    5. Keeps log of everything
-    6. It's pretty spooky, one time it scared me at 3 o'clock in the morning during coronadays of 2020.
-       I setup it for outside. No one was walking it turned out the camera had a problem of 
+    1. creats a smtp email server with gmail using ssl and 2-factor authentication service present
+    2. reads the recipients names andd address
+    3. prepare the content of the email 
+    4. sends email to the recipients to scare them
+    5. keeps log of everything
+    6. it's pretty spooky, one time it scared me at 3 o'clock in the morning during coronadays of 2020.
+       I setup it for outside. No one was walking, yet I got the email and saw nothing in the ficture. 
+	   It turned out the camera had a problem of switching left and right halves, and once it is corrected, 
+	   the program sees it as a difference and thus motion 
 
     Parameters
     ----------
