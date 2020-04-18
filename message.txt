@@ -1,0 +1,10 @@
+<html>
+<body>
+<p>Hey ${PERSON_NAME},<br><br>
+I think someone is in the room.<br>
+Find who it is in the attached image file. A video is being recorded whenever there is a movement.</p>
+<p>--<br>Thanks,<br>TheWebcam Manager</p>
+[Note: This is an automated generated email. The motion may have triggered automatically. If there is no movement within ${SECONDS} seconds, rest assured everything is alright.]
+</body>
+</html>
+
