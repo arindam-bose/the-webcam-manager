@@ -6,7 +6,7 @@ This program
  - puts a bounding box around the detected foreign body
  - puts time stamps and status of the motion detection
  - if the motion is detected saves the first image, starts saving the video stream, and sends email to those who are in the contacts file
-   - creats a smtp email server with gmail using ssl and 2-factor authentication service present
+   - creates a smtp email server with gmail using ssl and 2-factor authentication service present
    - reads the recipients names andd address
    - prepare the content of the email 
    - sends email to the recipients to scare them
