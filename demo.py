@@ -226,7 +226,7 @@ def read_template(filename):
 
 def send_email(filename):
     """
-    1. creats a smtp email server with gmail using ssl and 2-factor authentication service present
+    1. creates a smtp email server with gmail using ssl and 2-factor authentication service present
     2. reads the recipients names andd address
     3. prepare the content of the email 
     4. sends email to the recipients to scare them
