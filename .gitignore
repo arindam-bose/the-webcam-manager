@@ -1,0 +1,7 @@
+client_secret_986043396731-sqlui9eja2pi6u6iskib3ocnboj269oo.apps.googleusercontent.com.json
+__pycache__/
+images/
+videos/
+venv/
+*.log
+*.pickle

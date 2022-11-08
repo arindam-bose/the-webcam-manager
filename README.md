@@ -13,10 +13,22 @@ This program
    - keeps log of everything
  - if the last email was sent less than SECONDSBEFORELASTEMAIL seconds ago, doesnot send anything
 
-## Requirements
+## Installation
+```
+git clone https://github.com/arindam-bose/the-webcam-manager
+cd the-webcam-manager
+virtualenv venv -p /usr/bin/python3
+source venv/bin/activate
+pip install -r requirements.txt
+```
 
- - OpenCV (tested with v4.2.0)
- - SMTPlib
+## Requirements
+- opencv-python
+- numpy
+- google-api-python-client 
+- google-auth-httplib2 
+- google-auth-oauthlib
+
 
 Run
 ```

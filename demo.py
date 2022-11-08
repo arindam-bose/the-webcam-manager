@@ -11,6 +11,15 @@ import logging
 import argparse
 from datetime import datetime
 from configparser import ConfigParser
+from email.mime.base import MIMEBase
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email import encoders
+import base64
+import numpy as np
+import threading
+from tools.Google import Create_Service
+from tools.util import mkdir_p, get_contacts, read_template
 
 
 def initialize_capture():
@@ -40,7 +49,6 @@ def initialize_capture():
         cv_exit(cap, out)
     return cap, out
 
-
 def detect_motion(cap, out):
     """
     Does several things
@@ -64,8 +72,6 @@ def detect_motion(cap, out):
     None.
 
     """
-    import numpy as np
-    import threading
 
     try:
         # always save the first frame as a black screen with starting time stamp
@@ -147,7 +153,6 @@ def detect_motion(cap, out):
     
     cv_exit(cap, out)
 
-
 def cv_exit(cap, out):
     """
     Exits all video handler safely
@@ -173,56 +178,6 @@ def cv_exit(cap, out):
     except Exception as e:
         logger.error(e)
         return False
- 
-    
-def get_contacts(filename):
-    """
-    Return two lists names, emails containing names and email addresses
-    read from a file specified by filename.
-
-    Parameters
-    ----------
-    filename : string
-        full filename and path
-
-    Returns
-    -------
-    names : list
-        a list of names in order.
-    emails : list
-        a list of email addresses in the same order.
-
-    """
-    names = []
-    emails = []
-    with open(filename, mode='r', encoding='utf-8') as contacts_file:
-        for a_contact in contacts_file:
-            names.append(a_contact.split()[0])
-            emails.append(a_contact.split()[1])
-    return names, emails
-
-
-def read_template(filename):
-    """
-    Returns a Template object comprising the contents of the 
-    file specified by filename.    
-
-    Parameters
-    ----------
-    filename : string
-        full filename path.
-
-    Returns
-    -------
-        a Template object
-
-    """
-    from string import Template
-
-    with open(filename, 'r', encoding='utf-8') as template_file:
-        template_file_content = template_file.read()
-    return Template(template_file_content)
-
 
 def send_email(filename):
     """
@@ -246,19 +201,17 @@ def send_email(filename):
     None.
 
     """
-    import smtplib
-    from email.mime.base import MIMEBase
-    from email.mime.multipart import MIMEMultipart
-    from email.mime.text import MIMEText
-    from email import encoders
 
     logger.info('Email being sent to all the emails in contacts')
+    CLIENT_SECRET_FILE = 'client_secret_986043396731-sqlui9eja2pi6u6iskib3ocnboj269oo.apps.googleusercontent.com.json'
+    API_NAME = 'gmail'
+    API_VERSION = 'v1'
+    SCOPES = ['https://mail.google.com/']
+    
     try:
         names, emails = get_contacts(CONTACTSFILENAME) # read contacts
         message_template = read_template(MESSAGEFILENAME)
-        server = smtplib.SMTP_SSL(EMAILHOST, port=EMAILPORT)
-        server.ehlo()
-        server.login(SENDERADDRESS, SENDERPASSWORD)
+        service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
     except Exception as e:
         logger.error(e)
         
@@ -291,43 +244,16 @@ def send_email(filename):
             encoders.encode_base64(mime)
             # add MIMEBase object to MIMEMultipart object
             msg.attach(mime)
-            logger.info(msg_content)
+        logger.info(msg_content)
+        raw_string = base64.urlsafe_b64encode(msg.as_bytes()).decode()
         
         # send the message via the server set up earlier.
         try:
-            server.sendmail(msg['From'], msg["To"], msg.as_string())
+            # server.sendmail(msg['From'], msg["To"], msg.as_string())
+            message = service.users().messages().send(userId=msg['From'], body={'raw': raw_string}).execute()
         except Exception as e:
             logger.error(e)
         del msg
-    
-    # Terminate the SMTP session and close the connection
-    server.quit()
-
-    
-def mkdir_p(mypath):
-    """
-    Creates a directory. equivalent to using mkdir -p on the command line
-
-    Parameters
-    ----------
-    mypath : string
-        folder path.
-
-    Returns
-    -------
-    None.
-
-    """
-    from errno import EEXIST
-    from os import makedirs, path
-
-    try:
-        makedirs(mypath)
-    except OSError as exc:  # Python >2.5
-        if exc.errno == EEXIST and path.isdir(mypath):
-            pass
-        else:
-            raise
  
     
 def main():
@@ -344,7 +270,6 @@ def main():
     
     logger.info('Capture started...')
     detect_motion(cap, out)
-
 
 
 if __name__ == "__main__":
@@ -381,9 +306,6 @@ if __name__ == "__main__":
     VIDEOFRAMERATE         = config.getint('settings', 'VideoFrameRate')
     VIDNUM                 = config.getint('settings', 'VideoNumber')
     SENDERADDRESS          = config.get('settings', 'SenderAddress')
-    SENDERPASSWORD         = config.get('settings', 'SenderPassword')
-    EMAILHOST              = config.get('settings', 'EmailHost')
-    EMAILPORT              = config.getint('settings', 'EmailPort')
     EMAILSUB               = config.get('settings', 'EmailSubject')
     SECONDSBEFORELASTEMAIL = config.getint('settings', 'SecondsBeforeLastMail') 
     STRFRMT                = '%Y-%m-%d %H:%M:%S.%f'
@@ -402,6 +324,3 @@ if __name__ == "__main__":
     
     # call main now
     main()
-  
-    
-
